@@ -40,19 +40,17 @@ class UsersController {
     }
 
     
-    if (email) {
-      user.email = email;
-    } 
 
-    if(name) {
-      user.name = name;
-    }
-    
-    
-    
-   
-  
-   
+    user.name = name ?? user.name;
+    user.email = email ?? user.email;
+    // if (email) {
+    //   user.email = email;
+    // } 
+
+    // if(name) {
+    //   user.name = name;
+    // }
+                    
 
     if (password && !old_password) {
       throw new AppError("Você precisa informar a senha antiga")
@@ -69,7 +67,7 @@ class UsersController {
     }
 
     await database.run(`
-    UPDATE users SET name =?, email =?, password=?, updated_at =? WHERE ID=?`, [user.name, user.email, user.password, new Date(), id]);
+    UPDATE users SET name =?, email =?, password=?, updated_at = DATETIME('now') WHERE ID=?`, [user.name, user.email, user.password, id]);
 
     return response.status(200).json();
   }
