@@ -9,7 +9,11 @@ routes.use("/users", usersRouter);
 
 //Rota das notas
 const notesRouter = require("./notes.routes");
-routes.use("/notes", notesRouter)
+routes.use("/notes", notesRouter);
+
+//Rota das tags
+const tagsRouter = require("./tags.routes");
+routes.use("/tags", tagsRouter)
 
 
 //exportando para ser usado no no server.js

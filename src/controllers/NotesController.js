@@ -5,12 +5,14 @@ class NotesController {
       const { title, description, tags, links} = request.body;
       const { user_id } = request.params;
 
-      const [note_id] = await knex("notes").insert({
+      const [note_id] = await knex("notes").insert({ //função insert retorna uma promise q se resolvida passa o valor da nota
         title,
         description,
         user_id
       });
 
+      
+      /*percorre os elementos da propriedade link e retorna um novo array p/ cada com o id da nota e o valor de link p/ url*/
       const linksInsert = links.map(link => {
         return {
           note_id,
@@ -18,7 +20,10 @@ class NotesController {
         }
       });
 
+      /*insere o valor do return na tab links*/
       await knex("links").insert(linksInsert);
+
+      
 
       const tagsInsert = tags.map(name => {
         return {
@@ -60,11 +65,23 @@ class NotesController {
 
     let notes;
 
+    
+
     if(tags) {
       const filterTags = tags.split(',').map(tag => tag.trim());
       
+      
       notes = await knex("tags")
+      .select([
+        "notes.id",
+        "notes.title",
+        "notes.user_id"
+      ])
+      .where("notes.user_id", user_id)
+      .whereLike("notes.title", `%${title}%`)
       .whereIn("name", filterTags)
+      .innerJoin("notes", "notes.id", "tags.note_id")
+      .orderBy("notes.title")
 
     } else {
       notes = await knex("notes")
@@ -73,9 +90,17 @@ class NotesController {
         .orderBy("title");
     }
 
-    
+    const userTags = await knex("tags").where({user_id}); // pega todas as tags do user
+    const notesWithTags = notes.map(note => {  //percorre cada nota do usuario. filtrou cada nota do user onde o id da nota era igual na tag
+      const noteTags = userTags.filter(tag => tag.note_id === note.id);
 
-    return response.json(notes);
+      return { 
+        ...note,
+        tags: noteTags
+      } //retornamos o conteudo da nota e as tags filtradas
+    })
+
+    return response.json(notesWithTags);
    }
 }
 

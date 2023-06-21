@@ -59,3 +59,59 @@ exports.down = knex => knex.schema.dropTable("notes");
 > É a frequência que uma tabela se relaciona com outra;
 > "PÉ de galinha" ou letras/números para representar uma relação frequente, por ex um user pode ter várias notas
 > Duas direções (de onde vem e onde fecha)
+
+
+# WhereLike
+> wherelike ajuda a buscar por valores que contenham dentro da palavra
+
+    } else {
+      notes = await knex("notes")
+        .where({ user_id })
+        .whereLike("title", `%${title}%`) //usamos dessa forma para buscar palavras similares
+        .orderBy("title");
+    }
+
+# Where 
+.where({ user_id }): Esta linha aplica uma cláusula WHERE na consulta, filtrando os resultados com base no valor da variável user_id. A sintaxe { user_id } é uma forma abreviada de { user_id: user_id }, onde o valor da variável user_id é usado para filtrar os registros com o mesmo valor nessa coluna.
+
+
+# Busca na tabela
+notes = await knex("notes"): Nesta linha, a variável notes está sendo atribuída com o resultado de uma consulta ao banco de dados usando o objeto knex. A função knex("notes") indica que estamos acessando a tabela chamada "notes".
+
+
+# Inner Join 
+> Serve para fazer a junção de 2 tabelas e trazer um resultado conjunto desses dados.
+> Não irá unir de fato, mas irá selecionar os resultados das 2 em uma única consulta.
+> Verifica os registros em comum entre as 2
+> Ex:
+tabela tags       |  tabela notes 
+id  name  noteid  | id tittle
+1   tag1  1       -> 1  nota1
+2   tag2  1       ^ 
+
+
+# Função map e filter
+const tags = [
+  {id: 1, name: "node", note_id: 1},
+  {id: 2, name: "express", note_id: 1},
+  {id: 3, name: "react", note_id: 1},
+  {id: 4, name: "javascript", note_id: 2},
+  {id: 5, name: "frontend", note_id: 2},
+];
+
+
+/*MAP é uma função do javascript para percorrer cada elemento do array e ele devolve um novo array*/ 
+
+/* const newArray = tags.map(tag => {
+  return {...tag,
+  date: new Date()}
+});
+
+console.log(newArray); */
+
+/*FILTER quer filtrar o conteudo do seu array */
+
+const newArray = tags.filter(tag => tag.note_id === 1);
+console.log(newArray)
+
+
